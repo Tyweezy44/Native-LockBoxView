@@ -16,15 +16,8 @@ class MainViewModel : ViewModel() {
     fun start() {
         viewModelScope.launch {
             var count = 0f
-            delay(200)
-            while (count < 101) {
-                delay(200)
-                if (count == 100f) {
-                    count = 0f
-                }
-                percent.value = count
-                count++
-            }
+            delay(1000)
+            percent.value = 50f
         }
     }
 }

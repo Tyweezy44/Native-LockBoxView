@@ -10,7 +10,7 @@ import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import com.tapi.lockboxview.R
 
-class DynamicViewDrawer(private val context: Context, private val invalidate: () -> Unit) :
+class TextDrawer(private val context: Context, private val invalidate: () -> Unit) :
     BaseDrawer() {
     private var textRect: RectF = RectF()
 
@@ -38,7 +38,6 @@ class DynamicViewDrawer(private val context: Context, private val invalidate: ()
         invalidate()
     }
 
-
     private fun drawPercentNumber(canvas: Canvas, percent: Float) {
         val content = "${percent.toInt()}"
         val rect = Rect()
@@ -64,6 +63,7 @@ class DynamicViewDrawer(private val context: Context, private val invalidate: ()
     private fun drawTextPercent(canvas: Canvas, text: String = "%") {
         val rect = Rect()
         textPaint.textSize = percentCharTextSize
+
         textPaint.getTextBounds(text, 0, text.length, rect)
         canvas.drawText(
             text, textRect.right, textRect.top - rect.height() * 2, textPaint

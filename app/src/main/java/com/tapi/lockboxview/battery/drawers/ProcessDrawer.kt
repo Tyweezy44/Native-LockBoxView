@@ -1,28 +1,42 @@
 package com.tapi.lockboxview.battery.drawers
 
 import android.animation.ValueAnimator
-import android.content.Context
+import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.view.animation.LinearInterpolator
-import com.tapi.lockboxview.battery.dpToPx
+import com.tapi.lockboxview.battery.drawLineGap
+import com.tapi.lockboxview.battery.model.Coordinate
+import com.tapi.lockboxview.battery.model.PairCoordinate
 import com.tapi.lockboxview.custom.convertValue
 
 class ProcessDrawer(
-    private val context: Context, private val invalidate: () -> Unit
+    private val invalidate: () -> Unit
 ) : BaseDrawer() {
 
     private var oldPercent: Float = 0f
+
+    private val neonPaint: Paint by lazy {
+        val paint = Paint()
+        paint.apply {
+            color = Color.parseColor("#FF03DAC5")
+            style = Paint.Style.STROKE
+            strokeWidth = backgroundStrokeWidth
+            strokeCap = Paint.Cap.ROUND
+            maskFilter = BlurMaskFilter(10f, BlurMaskFilter.Blur.OUTER)
+        }
+        paint
+    }
 
     private val backgroundProcessPaint: Paint by lazy {
         val paint = Paint()
         paint.apply {
             color = Color.parseColor("#FFFFFF")
             style = Paint.Style.STROKE
-            strokeWidth = context.dpToPx(2f)
+            strokeWidth = backgroundStrokeWidth
             strokeCap = Paint.Cap.ROUND
         }
         paint
@@ -33,11 +47,12 @@ class ProcessDrawer(
         paint.apply {
             color = Color.parseColor("#7DF6FF")
             style = Paint.Style.STROKE
-            strokeWidth = context.dpToPx(2f)
+            strokeWidth = progressStrokeWidth
+            strokeJoin = Paint.Join.ROUND
+            strokeCap = Paint.Cap.ROUND
         }
         paint
     }
-
 
     private var processAnimate: ValueAnimator? = null
 
@@ -45,13 +60,15 @@ class ProcessDrawer(
     val path = Path()
 
     fun draw(canvas: Canvas) {
+        //draw background progress
+        drawArcSwipe(canvas, SWEEP_ANGLE, neonPaint)
         drawArcSwipe(canvas, SWEEP_ANGLE, backgroundProcessPaint)
+        drawGap(canvas)
 
+        //draw progress
         val angle = convertValue(0f, 100f, 0f, SWEEP_ANGLE, oldPercent)
-
         drawArcSwipe(canvas, angle, processPaint)
 
-        drawGap(canvas)
     }
 
     override fun setPercent(percent: Float) {
@@ -67,7 +84,7 @@ class ProcessDrawer(
         }
 
         processAnimate = ValueAnimator.ofFloat(oldPercent, getPercent()).apply {
-            duration = 350
+            duration = 500L
             interpolator = LinearInterpolator()
 
             addUpdateListener {
@@ -79,7 +96,6 @@ class ProcessDrawer(
         }
     }
 
-
     private fun drawArcSwipe(canvas: Canvas, sweepAngle: Float, paint: Paint) {
         canvas.drawArc(
             rectBoundArc, START_ANGLE, sweepAngle, false, paint
@@ -87,38 +103,30 @@ class ProcessDrawer(
     }
 
     private fun drawGap(canvas: Canvas) {
-        val percent = getPercent()
-        val radiusBound = radius + paddingBetween
+        val leftAxis = getLeftAxis()
+        val rightAxis = getRightAxis()
 
-        val (xLeftStart, yLeftStart) = getAxisGap(
-            radiusBound, START_ANGLE
-        )
 
-        val (xLeftEnd, yLeftEnd) = getAxisGap(
-            radiusBound - lengthGap, START_ANGLE
-        )
+        canvas.drawLineGap(leftAxis.start, leftAxis.end, backgroundProcessPaint)
+        canvas.drawLineGap(rightAxis.start, rightAxis.end, backgroundProcessPaint)
 
-        val (xRightStart, yRightStart) = getAxisGap(
-            radiusBound, END_ANGLE
-        )
+        val leftPaint = if (oldPercent > 0) processPaint else neonPaint
+        val rightPaint = if (oldPercent < 100) neonPaint else processPaint
 
-        val (xRightEnd, yRightEnd) = getAxisGap(radiusBound - lengthGap, END_ANGLE)
+        canvas.drawLineGap(leftAxis.start, leftAxis.end, leftPaint)
+        canvas.drawLineGap(rightAxis.start, rightAxis.end, rightPaint)
+    }
 
-        canvas.drawLine(
-            xLeftStart,
-            yLeftStart,
-            xLeftEnd,
-            yLeftEnd,
-            if (percent > 0) processPaint else backgroundProcessPaint
-        )
-        canvas.drawLine(
-            xRightStart,
-            yRightStart,
-            xRightEnd,
-            yRightEnd,
-            if (percent < 100) backgroundProcessPaint else processPaint
-        )
+    private fun getLeftAxis(): PairCoordinate {
+        val start = getAxisGap(radiusBound, START_ANGLE)
+        val end = getAxisGap(radiusBound - lengthGap, START_ANGLE)
+        return PairCoordinate(start, end)
+    }
 
+    private fun getRightAxis(): PairCoordinate {
+        val start = getAxisGap(radiusBound, END_ANGLE)
+        val end = getAxisGap(radiusBound - lengthGap, END_ANGLE)
+        return PairCoordinate(start, end)
     }
 
     private fun getViewBoundArc(): RectF {
@@ -131,10 +139,9 @@ class ProcessDrawer(
         )
     }
 
-
     private fun getAxisGap(
         radius: Float, degree: Float
-    ): Pair<Float, Float> {
+    ): Coordinate {
         return getAxis(
             viewBound.centerX().toFloat(), viewBound.centerY().toFloat(), radius, degree
         )

@@ -2,6 +2,7 @@ package com.tapi.lockboxview.battery.drawers
 
 import android.graphics.Rect
 import com.tapi.lockboxview.battery.absoluteDimension
+import com.tapi.lockboxview.battery.model.Coordinate
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
@@ -10,13 +11,15 @@ import kotlin.math.sin
 const val RATIO_CIRCLE = 202f
 const val RATIO_PERCENT_NUMBER = 64f
 const val RATIO_PERCENT_CHAR = 34f
-const val RATIO_WIDTH = 360f
-const val RATIO_HEIGHT = 640f
+const val RATIO_WIDTH = 300f
+const val RATIO_HEIGHT = 275f
 const val RATIO_PADDING = 20f
 const val GAP_RATIO = 10f
+const val PROGRESS_STROKE_BACKGROUND_WIDTH = 2f
+const val PROGRESS_STROKE_WIDTH = 4f
 
 
-open class BaseDrawer() {
+open class BaseDrawer {
     protected var viewBound: Rect = Rect()
 
     protected val percentNumberTextSize: Float
@@ -32,8 +35,18 @@ open class BaseDrawer() {
     protected val lengthGap: Float get() = viewBound.getDimensionWithRatio(GAP_RATIO)
 
     protected val paddingBetween: Float get() = viewBound.getDimensionWithRatio(RATIO_PADDING)
+    protected val progressStrokeWidth: Float
+        get() = viewBound.getDimensionWithRatio(
+            PROGRESS_STROKE_WIDTH
+        )
+    protected val backgroundStrokeWidth: Float
+        get() = viewBound.getDimensionWithRatio(
+            PROGRESS_STROKE_BACKGROUND_WIDTH
+        )
 
     protected val radius: Float get() = circleCenterWidth / 2
+    protected val radiusBound: Float get() = radius + paddingBetween
+
 
     protected val START_ANGLE = 135f
     protected val SWEEP_ANGLE = 270f
@@ -49,7 +62,12 @@ open class BaseDrawer() {
         val ratio = if (width() <= height()) {
             ratioCalculate / RATIO_WIDTH
         } else {
-            ratioCalculate / RATIO_HEIGHT
+            val realRatio = width().toFloat() / height().toFloat()
+            if (realRatio < 0.5f) {
+                ratioCalculate / RATIO_HEIGHT
+            } else {
+                ratioCalculate / RATIO_WIDTH
+            }
         }
         return absoluteDimension() * ratio
     }
@@ -59,11 +77,11 @@ open class BaseDrawer() {
         yCenter: Float,
         radius: Float,
         degree: Float
-    ): Pair<Float, Float> {
+    ): Coordinate {
         val radian = Math.toRadians(degree.toDouble())
         val x = xCenter + (radius) * cos(radian).toFloat()
         val y = yCenter + (radius) * sin(radian).toFloat()
-        return x to y
+        return Coordinate(x, y)
     }
 
     /**
