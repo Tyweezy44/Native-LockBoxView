@@ -1,12 +1,16 @@
-package com.tapi.lockboxview.battery
+package com.example.antivirus.applock.clean.ui.savebattery.battery_view
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
-import com.tapi.lockboxview.battery.drawers.CircleDrawer
-import com.tapi.lockboxview.battery.drawers.ProcessDrawer
-import com.tapi.lockboxview.battery.drawers.TextDrawer
+import com.example.antivirus.applock.clean.ui.savebattery.battery_view.drawers.CircleDrawer
+import com.example.antivirus.applock.clean.ui.savebattery.battery_view.drawers.ProcessDrawer
+import com.example.antivirus.applock.clean.ui.savebattery.battery_view.drawers.TextDrawer
+import com.example.antivirus.applock.clean.ui.savebattery.battery_view.model.Coordinate
+import kotlin.math.min
 
 class BatteryView : View {
 
@@ -42,9 +46,9 @@ class BatteryView : View {
 
     }
 
-    fun setPercent(fl: Float) {
-        textDrawer.setPercent(fl)
-        processDrawer.setPercent(fl)
+    fun setPercent(level: Int) {
+        textDrawer.setPercent(level)
+        processDrawer.setPercent(level)
     }
 
     private fun setupDrawer(w: Int, h: Int) {
@@ -53,4 +57,12 @@ class BatteryView : View {
         textDrawer.setup(w, h)
     }
 
+}
+
+fun Rect.absoluteDimension(): Int {
+    return min(width(), height())
+}
+
+fun Canvas.drawLineGap(start: Coordinate, end: Coordinate, paint: Paint) {
+    drawLine(start.x, start.y, end.x, end.y, paint)
 }

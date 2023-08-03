@@ -1,4 +1,4 @@
-package com.tapi.lockboxview.battery.drawers
+package com.example.antivirus.applock.clean.ui.savebattery.battery_view.drawers
 
 import android.graphics.Canvas
 import android.graphics.Color
@@ -11,6 +11,7 @@ class CircleDrawer : BaseDrawer() {
         paint.apply {
             color = Color.parseColor("#8060A3F3")
             style = Paint.Style.FILL
+            isAntiAlias = true
         }
         paint
     }

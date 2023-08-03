@@ -1,4 +1,4 @@
-package com.tapi.lockboxview.battery.drawers
+package com.example.antivirus.applock.clean.ui.savebattery.battery_view.drawers
 
 import android.content.Context
 import android.graphics.Canvas
@@ -12,11 +12,14 @@ import com.tapi.lockboxview.R
 
 class TextDrawer(private val context: Context, private val invalidate: () -> Unit) :
     BaseDrawer() {
-    private var textRect: RectF = RectF()
+    private var boundRectText: RectF = RectF()
+    private  val rectNumber = Rect()
+    private val rectPercentChar = Rect()
 
     private val textPaint: Paint by lazy {
         val paint = Paint()
         paint.apply {
+            isAntiAlias = true
             color = Color.parseColor("#FFFFFF")
             style = Paint.Style.FILL
             typeface = textTypeFace
@@ -33,40 +36,38 @@ class TextDrawer(private val context: Context, private val invalidate: () -> Uni
         drawTextPercent(canvas)
     }
 
-    override fun setPercent(percent: Float) {
+    override fun setPercent(percent: Int) {
         super.setPercent(percent)
         invalidate()
     }
 
-    private fun drawPercentNumber(canvas: Canvas, percent: Float) {
-        val content = "${percent.toInt()}"
-        val rect = Rect()
+    private fun drawPercentNumber(canvas: Canvas, percent: Int) {
+        val content = percent.toString()
+
         textPaint.typeface = textTypeFace
         textPaint.textSize = percentNumberTextSize
-        textPaint.getTextBounds(content, 0, content.length, rect)
+        textPaint.getTextBounds(content, 0, content.length, rectNumber)
         canvas.drawText(
             content,
-            (viewBound.width() - rect.width()) / 2f,
-            (viewBound.height() + rect.height()) / 2f,
+            (viewBound.width() - rectNumber.width()) / 2f,
+            (viewBound.height() + rectNumber.height()) / 2f,
             textPaint
         )
 
-        val left = (viewBound.width() - rect.width()) / 2f
-        val top = (viewBound.height() + rect.height()) / 2f
-        val right = left + rect.width()
-        val bottom = top + rect.height()
+        val left = (viewBound.width() - rectNumber.width()) / 2f
+        val top = (viewBound.height() + rectNumber.height()) / 2f
+        val right = left + rectNumber.width()
+        val bottom = top + rectNumber.height()
 
-        textRect.set(left, top, right, bottom)
-
+        boundRectText.set(left, top, right, bottom)
     }
 
     private fun drawTextPercent(canvas: Canvas, text: String = "%") {
-        val rect = Rect()
         textPaint.textSize = percentCharTextSize
 
-        textPaint.getTextBounds(text, 0, text.length, rect)
+        textPaint.getTextBounds(text, 0, text.length, rectPercentChar)
         canvas.drawText(
-            text, textRect.right, textRect.top - rect.height() * 2, textPaint
+            text, boundRectText.right, boundRectText.top - rectPercentChar.height() * 2, textPaint
         )
     }
 

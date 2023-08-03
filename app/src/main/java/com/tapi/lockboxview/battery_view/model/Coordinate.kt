@@ -1,4 +1,4 @@
-package com.tapi.lockboxview.battery.model
+package com.example.antivirus.applock.clean.ui.savebattery.battery_view.model
 
 data class Coordinate(val x: Float, val y: Float)
 
