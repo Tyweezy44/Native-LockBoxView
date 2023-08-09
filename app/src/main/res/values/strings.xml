@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">LockBoxVIew</string>
+    <string name="switch_to_mode_from_time_to_time_format">Switch to %s mode from %s to %s</string>
 </resources>

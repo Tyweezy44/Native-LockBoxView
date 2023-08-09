@@ -1,7 +1,7 @@
 package com.example.antivirus.applock.clean.ui.savebattery.battery_view.drawers
 
 import android.graphics.Rect
-import com.example.antivirus.applock.clean.ui.savebattery.battery_view.absoluteDimension
+import com.tapi.lockboxview.battery_view.absoluteDimension
 import com.example.antivirus.applock.clean.ui.savebattery.battery_view.model.Coordinate
 import kotlin.math.cos
 import kotlin.math.max

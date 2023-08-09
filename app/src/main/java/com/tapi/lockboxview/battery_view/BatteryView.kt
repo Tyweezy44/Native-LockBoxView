@@ -1,4 +1,4 @@
-package com.example.antivirus.applock.clean.ui.savebattery.battery_view
+package com.tapi.lockboxview.battery_view
 
 import android.content.Context
 import android.graphics.Canvas

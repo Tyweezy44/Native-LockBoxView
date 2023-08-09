@@ -8,7 +8,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.view.animation.LinearInterpolator
-import com.example.antivirus.applock.clean.ui.savebattery.battery_view.drawLineGap
+import com.tapi.lockboxview.battery_view.drawLineGap
 import com.example.antivirus.applock.clean.ui.savebattery.battery_view.model.Coordinate
 import com.example.antivirus.applock.clean.ui.savebattery.battery_view.model.PairCoordinate
 import com.tapi.lockboxview.custom.convertValue
